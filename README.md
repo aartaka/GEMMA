@@ -123,6 +123,8 @@ gemma -g ./example/mouse_hs1940.geno.txt.gz -p ./example/mouse_hs1940.pheno.txt 
 gemma -g ./example/mouse_hs1940.geno.txt.gz \
     -p ./example/mouse_hs1940.pheno.txt -n 1 -a ./example/mouse_hs1940.anno.txt \
     -k ./output/mouse_hs1940.cXX.txt -lmm -o mouse_hs1940_CD8_lmm
+# run multivariate LMM
+gemma -g *.geno.txt -p *.pheno.txt -lmm -k *.cXX.txt -n 1 2 -o *-mvlmm
 ```
 
 Above example files are in the git repo and can be downloaded from

@@ -1896,7 +1896,7 @@ void PARAM::WriteMatrix(const gsl_matrix *matrix_U, const string suffix) {
     return;
   }
 
-  outfile.precision(10);
+  outfile.precision(17);
 
   for (size_t i = 0; i < matrix_U->size1; ++i) {
     for (size_t j = 0; j < matrix_U->size2; ++j) {

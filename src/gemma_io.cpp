@@ -87,7 +87,7 @@ typedef vector<const char *> token_list;
 token_list tokenize_whitespace(const string line, uint num, const char *infilen) {
   token_list v;
   v.reserve(num);
-  auto token = strtok_safe2((char *)line.c_str(), " ,\t",infilen);
+  auto token = strtok_safe2((char *)line.c_str(), " ,\t", infilen);
   while (token) {
     const char *token2 = strndup(token,256);
     v.push_back(token2);
@@ -1422,6 +1422,10 @@ bool BimbamKin(const string file_geno, const set<string> ksnps,
   auto infilen = file_geno.c_str();
   igzstream infile(infilen, igzstream::in);
   enforce_msg(infilen, "error reading genotype file");
+  cout << "indicator_snp:" << endl;
+  for (auto i : indicator_snp)
+          cout << i << ", ";
+  cout << endl;
 
   size_t n_miss;
   double geno_mean, geno_var;
@@ -1550,12 +1554,14 @@ bool BimbamKin(const string file_geno, const set<string> ksnps,
     // Every msize rows batch compute kinship matrix and return
     // by adding to matrix_kin
     if (ns_test % msize == 0) {
+      write(Xlarge, "Xlarge-before-kinship-batch");
       fast_eigen_dgemm("N", "T", 1.0, Xlarge, Xlarge, 1.0, matrix_kin);
       gsl_matrix_set_zero(Xlarge);
       write(matrix_kin,"K updated");
     }
   }
   if (ns_test % msize != 0) { // compute last batch
+    write(Xlarge, "Xlarge-before-kinship-extra");
     fast_eigen_dgemm("N", "T", 1.0, Xlarge, Xlarge, 1.0, matrix_kin);
     write(matrix_kin,"K updated");
   }

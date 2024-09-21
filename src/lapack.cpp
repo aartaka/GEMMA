@@ -148,7 +148,7 @@ void lapack_dgemm(char *TransA, char *TransB, double alpha, const gsl_matrix *A,
 // 'eval'. Also returns matrix 'evec' (U).
 void lapack_eigen_symmv(gsl_matrix *A, gsl_vector *eval, gsl_matrix *evec,
                         const size_t flag_largematrix) {
-  if (flag_largematrix == 1) { // not sure this flag is used!
+  if (flag_largematrix) { // not sure this flag is used!
     int N = A->size1, LDA = A->size1, INFO, LWORK = -1;
     char JOBZ = 'V', UPLO = 'L';
 
@@ -265,8 +265,8 @@ double EigenDecomp_Zeroed(gsl_matrix *G, gsl_matrix *U, gsl_vector *eval,
   int count_negative_eigenvalues = 0;
   for (size_t i = 0; i < eval->size; i++) {
     // if (std::abs(gsl_vector_get(eval, i)) < EIGEN_MINVALUE)
-    if (gsl_vector_get(eval, i) < 1e-10)
-      gsl_vector_set(eval, i, 0.0);
+	if (gsl_vector_get(eval, i) < 1e-10)
+		gsl_vector_set(eval, i, 0.0);
     // checks
     if (gsl_vector_get(eval,i) == 0.0)
       count_zero_eigenvalues += 1;

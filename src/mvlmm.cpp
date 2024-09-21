@@ -2768,7 +2768,8 @@ void MphInitial(const size_t em_iter, const double em_prec,
                 gsl_matrix *B) {
 
   debug_msg("MphInitial");
-  write(Y, "Y in MphInitial");
+  write(X, "X-in-MphInitial");
+  write(Y, "Y-in-MphInitial");
   gsl_matrix_set_zero(V_g);
   gsl_matrix_set_zero(V_e);
   gsl_matrix_set_zero(B);
@@ -2791,10 +2792,17 @@ void MphInitial(const size_t em_iter, const double em_prec,
                logl);
     CalcLmmVgVeBeta(eval, Xt, &Y_row.vector, lambda, vg, ve, beta_temp,
                     se_beta_temp);
+    if (0 == i) {
+            write(lambda, "first-lambda-in-MphInitial");
+            write(vg, "first-vg-in-MphInitial");
+            write(ve, "first-ve-in-MphInitial");
+    }
 
     gsl_matrix_set(V_g, i, i, vg);
     gsl_matrix_set(V_e, i, i, ve);
   }
+  write(V_g, "V_g-in-MphInitial");
+  write(V_e, "V_e-in-MphInitial");
 
   gsl_matrix_free(Xt);
   gsl_vector_free(beta_temp);
@@ -2907,6 +2915,7 @@ void MphInitial(const size_t em_iter, const double em_prec,
 
   // Calculate UltVehiY.
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, UltVehi, Y, 0.0, UltVehiY);
+  write(UltVehiY, "UltVehiY-in-MphInitial");
 
   // calculate XHiy
   for (size_t i = 0; i < d_size; i++) {
@@ -3055,21 +3064,25 @@ void MVLMM::AnalyzeBimbam(const gsl_matrix *U, const gsl_vector *eval,
 
   MphInitial(em_iter, em_prec, nr_iter, nr_prec, eval, &X_sub.matrix, Y, l_min,
              l_max, n_region, V_g, V_e, &B_sub.matrix);
+  write(V_g, "V_g_Initial");
+  write(V_e, "V_e_Initial");
   logl_H0 = MphEM('R', em_iter, em_prec, eval, &X_sub.matrix, Y, U_hat, E_hat,
                   OmegaU, OmegaE, UltVehiY, UltVehiBX, UltVehiU, UltVehiE, V_g,
                   V_e, &B_sub.matrix);
-  write(V_g, "V_g0");
-  write(V_e, "V_e0");
+  write(logl_H0, "logl_H0-after-EM");
+  write(V_g, "V_gR0");
+  write(V_e, "V_eR0");
   logl_H0 = MphNR('R', nr_iter, nr_prec, eval, &X_sub.matrix, Y, Hi_all,
                   &xHi_all_sub.matrix, Hiy_all, V_g, V_e, Hessian, crt_a, crt_b,
                   crt_c);
-  write(Hessian, "Hessian0");
-  write(crt_a, "crt_a0");
-  write(crt_b, "crt_b0");
-  write(crt_c, "crt_c0");
+  write(logl_H0, "logl_H0-after-NR");
+  write(Hessian, "HessianR0");
+  write(crt_a, "crt_aR0");
+  write(crt_b, "crt_bR0");
+  write(crt_c, "crt_cR0");
   MphCalcBeta(eval, &X_sub.matrix, Y, V_g, V_e, UltVehiY, &B_sub.matrix,
               se_B_null);
-  write(se_B_null, "se_B_null0");
+  write(se_B_null, "se_B_null01");
 
   c = 0;
   Vg_remle_null.clear();
@@ -3131,11 +3144,18 @@ void MVLMM::AnalyzeBimbam(const gsl_matrix *U, const gsl_vector *eval,
   logl_H0 = MphEM('L', em_iter, em_prec, eval, &X_sub.matrix, Y, U_hat, E_hat,
                   OmegaU, OmegaE, UltVehiY, UltVehiBX, UltVehiU, UltVehiE, V_g,
                   V_e, &B_sub.matrix);
+  write(V_g, "V_gL0");
+  write(V_e, "V_eL0");
   logl_H0 = MphNR('L', nr_iter, nr_prec, eval, &X_sub.matrix, Y, Hi_all,
                   &xHi_all_sub.matrix, Hiy_all, V_g, V_e, Hessian, crt_a, crt_b,
                   crt_c);
+  write(Hessian, "HessianL0");
+  write(crt_a, "crt_aL0");
+  write(crt_b, "crt_bL0");
+  write(crt_c, "crt_cL0");
   MphCalcBeta(eval, &X_sub.matrix, Y, V_g, V_e, UltVehiY, &B_sub.matrix,
               se_B_null);
+  write(se_B_null, "se_B_null02");
 
   c = 0;
   Vg_mle_null.clear();

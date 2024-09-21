@@ -904,6 +904,9 @@ double LogRL_dev1(double l, void *params) {
 
   gsl_vector_set_all(v_temp, 1.0);
   gsl_blas_ddot(Hi_eval, v_temp, &trace_Hi);
+  write(v_temp, "v_temp-in-LogRL_dev1");
+  write(Hi_eval, "Hi_eval-in-LogRL_dev1");
+  write(trace_Hi, "trace_Hi-in-LogRL_dev1");
 
   if (p->e_mode != 0) {
     trace_Hi = (double)ni_test - trace_Hi;
@@ -913,6 +916,8 @@ double LogRL_dev1(double l, void *params) {
   write(p->ab, "p->ab");
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
+  write(Pab, "Pab-in-LogRL_dev1");
+  write(PPab, "PPab-in-LogRL_dev1");
 
   // Calculate tracePK and trace PKPK.
   double trace_P = trace_Hi;
@@ -1970,7 +1975,9 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
 
     if (func_name == 'R' || func_name == 'r') { // log-restricted likelihood
       dev1_l = LogRL_dev1(lambda_l, &params);
+      write(dev1_l, "dev1_l-in-CalcLambda");
       dev1_h = LogRL_dev1(lambda_h, &params);
+      write(dev1_h, "dev1_h-in-CalcLambda");
     } else {
       dev1_l = LogL_dev1(lambda_l, &params);
       dev1_h = LogL_dev1(lambda_h, &params);
@@ -1999,7 +2006,6 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       logf = logf_h;
     }
   } else {
-
     // If derivates change signs.
     double l=0.0, l_temp = 0.0;
 
@@ -2029,6 +2035,8 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
     for (vector<double>::size_type i = 0; i < lambda_lh.size(); ++i) {
       lambda_l = lambda_lh[i].first;
       lambda_h = lambda_lh[i].second;
+      write(lambda_l, "lambda_l-in-derivative");
+      write(lambda_h, "lambda_h-in-derivative");
       // printf("%f,%f\n",lambda_l,lambda_h);
       auto handler = gsl_set_error_handler_off();
       gsl_root_fsolver_set((gsl_root_fsolver*)s_f, &F, lambda_l, lambda_h);
@@ -2045,6 +2053,7 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
           break;
         }
         l = gsl_root_fsolver_root(s_f);
+        write(l, "l-in-CalcLambda");
         lambda_l = gsl_root_fsolver_x_lower(s_f);
         lambda_h = gsl_root_fsolver_x_upper(s_f);
         status = gsl_root_test_interval(lambda_l, lambda_h, 0, 1e-1);
@@ -2139,6 +2148,8 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
   return;
 }
 
+static int first_call = 1;
+
 // Calculate lambda in the null model.
 void CalcLambda(const char func_name, const gsl_vector *eval,
                 const gsl_matrix *UtW, const gsl_vector *Uty,
@@ -2163,15 +2174,20 @@ void CalcLambda(const char func_name, const gsl_vector *eval,
   gsl_vector *ab = gsl_vector_safe_alloc(n_index);
 
   gsl_matrix_set_zero(Uab);
-  write(UtW,"UtW");
-  write(Uty,"Uty");
+  write(UtW,"UtW-in-CalcLambda-null");
+  write(Uty,"Uty-in-CalcLambda-null");
   CalcUab(UtW, Uty, Uab);
-  write(Uab,"Uab");
+  write(Uab,"Uab-in-CalcLambda-null");
   Calcab(UtW, Uty, ab);
 
   FUNC_PARAM param0 = {true, ni_test, n_cvt, eval, Uab, ab, 0};
 
   CalcLambda(func_name, param0, l_min, l_max, n_region, lambda, logl_H0);
+  if (first_call) {
+          write(lambda, "first-lambda-in-CalcLambda-null");
+          write(logl_H0, "first-logl-in-CalcLambda-null");
+          first_call = 0;
+  }
 
   gsl_matrix_safe_free(Uab);
   gsl_vector_free(ab); // unused

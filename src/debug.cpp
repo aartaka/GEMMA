@@ -171,7 +171,7 @@ void write(const double d, const char *msg) {
   if (!is_debug_data_mode() && !is_debug_dump_mode()) return;
   ofstream out(debug_dump_path + "debug-dump-" + msg + ".txt");
   (is_debug_dump_mode() ? out : cout)
-          << std::setprecision(15) << d << ": " << msg << endl;
+          << std::setprecision(18) << d << ": " << msg << endl;
 }
 
 void write(const gsl_vector *v, const char *msg) {
@@ -185,7 +185,7 @@ void write(const gsl_vector *v, const char *msg) {
   }
   for (size_t i=0; i < v->size; i++) {
           (is_debug_dump_mode() ? out : cout)
-		  << std::setprecision(15)
+		  << std::setprecision(18)
                   << gsl_vector_get(v,i)
                   << (is_debug_dump_mode() ? "\t" : ",");
   }
@@ -216,7 +216,7 @@ void write(const gsl_matrix *m, const char *msg) {
           for (size_t col = 0; col < cols; col++) {
                   // cout << "(" << i << "," << j << ")";
                   (is_debug_dump_mode() ? out : cout)
-			  << std::setprecision(15)
+			  << std::setprecision(18)
                           << gsl_matrix_safe_get(m, row, col);
                   if (is_debug_dump_mode())
                           out << "\t";

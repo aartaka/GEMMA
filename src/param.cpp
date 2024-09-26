@@ -1825,7 +1825,7 @@ void PARAM::WriteVector(const gsl_vector *q, const gsl_vector *s,
     return;
   }
 
-  outfile.precision(10);
+  outfile.precision(18);
 
   for (size_t i = 0; i < q->size; ++i) {
     outfile << gsl_vector_get(q, i) << endl;
@@ -1855,7 +1855,7 @@ void PARAM::WriteVar(const string suffix) {
     return;
   }
 
-  outfile.precision(10);
+  outfile.precision(18);
 
   if (mindicator_snp.size() != 0) {
     for (size_t t = 0; t < mindicator_snp.size(); t++) {
@@ -1896,7 +1896,7 @@ void PARAM::WriteMatrix(const gsl_matrix *matrix_U, const string suffix) {
     return;
   }
 
-  outfile.precision(17);
+  outfile.precision(18);
 
   for (size_t i = 0; i < matrix_U->size1; ++i) {
     for (size_t j = 0; j < matrix_U->size2; ++j) {
@@ -1923,7 +1923,7 @@ void PARAM::WriteVector(const gsl_vector *vector_D, const string suffix) {
     return;
   }
 
-  outfile.precision(10);
+  outfile.precision(18);
 
   for (size_t i = 0; i < vector_D->size; ++i) {
     outfile << gsl_vector_get(vector_D, i) << endl;

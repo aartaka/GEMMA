@@ -138,7 +138,7 @@ endif
 
 ifneq ($(CXX), clang++)
   # Clang does not like these switches
-  debug check fast-check: CPPFLAGS += -Og -Wfatal-errors
+  debug check fast-check: CPPFLAGS += -Og -Wfatal-errors -Wextra -Wpedantic
 endif
 
 debug check fast-check: CPPFLAGS += -g $(GCC_FLAGS) $(GSL_INCLUDE_PATH) -Isrc

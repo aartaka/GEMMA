@@ -226,6 +226,7 @@ void lapack_eigen_symmv(gsl_matrix *A, gsl_vector *eval, gsl_matrix *evec,
     if (is_check_mode()) enable_segfpe(); // reinstate fast NaN checking
 
     gsl_matrix_transpose(evec);
+    write(evec, "evec_in_lapack_eigen_symmv");
 
     delete[] ISUPPZ;
     delete[] WORK;

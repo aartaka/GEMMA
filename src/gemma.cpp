@@ -2628,6 +2628,7 @@ void GEMMA::BatchRun(PARAM &cPar) {
         cPar.trace_G = EigenDecomp_Zeroed(G, U, eval, 0);
       }
       // write(eval,"eval");
+      write(U, "U_after_eigendecomp");
 
       if (!cPar.file_weight.empty()) {
         double wi;

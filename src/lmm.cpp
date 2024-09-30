@@ -378,8 +378,9 @@ void CalcPPab(const size_t n_cvt, const size_t e_mode,
           gsl_blas_ddot(HiHi_eval, &Uab_col.vector, &p2_ab);
           if (e_mode != 0) {
             assert(false);
-            p2_ab = p2_ab - gsl_vector_get(unused_ab, index_ab) +
-                    2.0 * gsl_matrix_safe_get(Pab, 0, index_ab);
+            p2_ab = (p2_ab
+		     - gsl_vector_get(unused_ab, index_ab)
+		     + 2.0 * gsl_matrix_safe_get(Pab, 0, index_ab));
           }
           gsl_matrix_set(PPab, 0, index_ab, p2_ab);
         } else {
@@ -399,8 +400,7 @@ void CalcPPab(const size_t n_cvt, const size_t e_mode,
           if (ps_ww != 0) {
             p2_ab = ps2_ab + ps_aw * ps_bw * ps2_ww / (ps_ww * ps_ww);
             p2_ab -= (ps_aw * ps2_bw + ps_bw * ps2_aw) / ps_ww;
-          }
-          else {
+          } else {
             p2_ab = ps2_ab;
           }
           gsl_matrix_set(PPab, p, index_ab, p2_ab);
@@ -904,9 +904,9 @@ double LogRL_dev1(double l, void *params) {
 
   gsl_vector_set_all(v_temp, 1.0);
   gsl_blas_ddot(Hi_eval, v_temp, &trace_Hi);
-  write(v_temp, "v_temp-in-LogRL_dev1");
-  write(Hi_eval, "Hi_eval-in-LogRL_dev1");
-  write(trace_Hi, "trace_Hi-in-LogRL_dev1");
+  write(v_temp, "v_temp_in_LogRL_dev1");
+  write(Hi_eval, "Hi_eval_in_LogRL_dev1");
+  write(trace_Hi, "trace_Hi_in_LogRL_dev1");
 
   if (p->e_mode != 0) {
     trace_Hi = (double)ni_test - trace_Hi;
@@ -916,8 +916,8 @@ double LogRL_dev1(double l, void *params) {
   write(p->ab, "p->ab");
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
-  write(Pab, "Pab-in-LogRL_dev1");
-  write(PPab, "PPab-in-LogRL_dev1");
+  write(Pab, "Pab_in_LogRL_dev1");
+  write(PPab, "PPab_in_LogRL_dev1");
 
   // Calculate tracePK and trace PKPK.
   double trace_P = trace_Hi;

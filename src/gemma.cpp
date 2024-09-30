@@ -2590,7 +2590,7 @@ void GEMMA::BatchRun(PARAM &cPar) {
         cout << "error! fail to read kinship/relatedness file. " << endl;
         return;
       }
-      write(G, "G-before-centering");
+      write(G, "G_before_centering");
       // center matrix G
       CenterMatrix(G);
       validate_K(G);

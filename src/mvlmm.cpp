@@ -2768,8 +2768,8 @@ void MphInitial(const size_t em_iter, const double em_prec,
                 gsl_matrix *B) {
 
   debug_msg("MphInitial");
-  write(X, "X-in-MphInitial");
-  write(Y, "Y-in-MphInitial");
+  write(X, "X_in_MphInitial");
+  write(Y, "Y_in_MphInitial");
   gsl_matrix_set_zero(V_g);
   gsl_matrix_set_zero(V_e);
   gsl_matrix_set_zero(B);
@@ -2793,16 +2793,16 @@ void MphInitial(const size_t em_iter, const double em_prec,
     CalcLmmVgVeBeta(eval, Xt, &Y_row.vector, lambda, vg, ve, beta_temp,
                     se_beta_temp);
     if (0 == i) {
-            write(lambda, "first-lambda-in-MphInitial");
-            write(vg, "first-vg-in-MphInitial");
-            write(ve, "first-ve-in-MphInitial");
+            write(lambda, "first_lambda_in_MphInitial");
+            write(vg, "first_vg_in_MphInitial");
+            write(ve, "first_ve_in_MphInitial");
     }
 
     gsl_matrix_set(V_g, i, i, vg);
     gsl_matrix_set(V_e, i, i, ve);
   }
-  write(V_g, "V_g-in-MphInitial");
-  write(V_e, "V_e-in-MphInitial");
+  write(V_g, "V_g_in_MphInitial");
+  write(V_e, "V_e_in_MphInitial");
 
   gsl_matrix_free(Xt);
   gsl_vector_free(beta_temp);
@@ -2915,7 +2915,7 @@ void MphInitial(const size_t em_iter, const double em_prec,
 
   // Calculate UltVehiY.
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, UltVehi, Y, 0.0, UltVehiY);
-  write(UltVehiY, "UltVehiY-in-MphInitial");
+  write(UltVehiY, "UltVehiY_in_MphInitial");
 
   // calculate XHiy
   for (size_t i = 0; i < d_size; i++) {

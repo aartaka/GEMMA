@@ -638,6 +638,7 @@ double MphEM(const char func_name, const size_t max_iter, const double max_prec,
 
   LUDecomp(XXt, pmt, &sig);
   LUInvert(XXt, pmt, XXti);
+  write(XXti, "XXti_in_MphEM");
 
   // Calculate the constant for logl.
   if (func_name == 'R' || func_name == 'r') {
@@ -647,15 +648,21 @@ double MphEM(const char func_name, const size_t max_iter, const double max_prec,
   } else {
     logl_const = -0.5 * (double)n_size * (double)d_size * safe_log(2.0 * M_PI);
   }
+  write(logl_const, "logl_const");
 
   // Start EM.
   for (size_t t = 0; t < max_iter; t++) {
     logdet_Ve = EigenProc(V_g, V_e, D_l, UltVeh, UltVehi);
+    write(D_l, "D_l_in_MphEM");
+    write(UltVeh, "UltVeh_in_MphEM");
+    write(UltVehi, "UltVehi_in_MphEM");
 
     logdet_Q = CalcQi(eval, D_l, X, Qi);
+    write(Qi, "Qi_in_MphEM");
 
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, UltVehi, Y, 0.0, UltVehiY);
     CalcXHiY(eval, D_l, X, UltVehiY, xHiy);
+    write(xHiy, "xHiy_in_MphEM");
 
     // Calculate log likelihood/restricted likelihood value, and
     // terminate if change is small.
@@ -670,6 +677,8 @@ double MphEM(const char func_name, const size_t max_iter, const double max_prec,
     logl_old = logl_new;
 
     CalcOmega(eval, D_l, OmegaU, OmegaE);
+    write(OmegaU, "OmegaU");
+    write(OmegaE, "OmegaE");
 
     // Update UltVehiB, UltVehiU.
     if (func_name == 'R' || func_name == 'r') {
@@ -684,6 +693,9 @@ double MphEM(const char func_name, const size_t max_iter, const double max_prec,
     }
 
     UpdateU(OmegaE, UltVehiY, UltVehiBX, UltVehiU);
+    write(UltVehiU, "UltVehiU");
+    write(UltVehiB, "UltVehiB");
+    write(UltVehiBX, "UltVehiBX");
 
     if (func_name == 'L' || func_name == 'l') {
 
@@ -694,19 +706,27 @@ double MphEM(const char func_name, const size_t max_iter, const double max_prec,
     }
 
     UpdateE(UltVehiY, UltVehiBX, UltVehiU, UltVehiE);
+    write(UltVehiE, "UltVehiE");
 
     // Calculate U_hat, E_hat and B.
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, UltVeh, UltVehiU, 0.0, U_hat);
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, UltVeh, UltVehiE, 0.0, E_hat);
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, UltVeh, UltVehiB, 0.0, B);
+    write(U_hat, "U_hat");
+    write(E_hat, "E_hat");
+    write(B, "B");
 
     // Calculate Sigma_uu and Sigma_ee.
     CalcSigma(func_name, eval, D_l, X, OmegaU, OmegaE, UltVeh, Qi, Sigma_uu,
               Sigma_ee);
 
+    write(Sigma_uu, "Sigma_uu");
+    write(Sigma_ee, "Sigma_ee");
     // Update V_g and V_e.
     UpdateV(eval, U_hat, E_hat, Sigma_uu, Sigma_ee, V_g, V_e);
   }
+  write(V_g, "V_g_in_MphEm");
+  write(V_e, "V_e_in_MphEm");
 
   gsl_matrix_free(XXt);
   gsl_matrix_free(XXti);
@@ -2578,6 +2598,7 @@ void UpdateVgVe(const gsl_matrix *Hessian_inv, const gsl_vector *gradient,
       gsl_vector_set(vec_v, v + v_size, d);
     }
   }
+  write(vec_v, "vec_v_in_UpdateVgVe");
 
   gsl_blas_dgemv(CblasNoTrans, -1.0 * step_scale, Hessian_inv, gradient, 1.0,
                  vec_v);
@@ -2644,6 +2665,7 @@ double MphNR(const char func_name, const size_t max_iter, const double max_prec,
       gsl_matrix_set(XXt, i, j, gsl_matrix_get(XXt, j, i));
     }
   }
+  write(XXt, "XXt_in_MphNR");
 
   gsl_permutation *pmt = gsl_permutation_alloc(c_size);
   LUDecomp(XXt, pmt, &sig);
@@ -2657,6 +2679,7 @@ double MphNR(const char func_name, const size_t max_iter, const double max_prec,
   } else {
     logl_const = -0.5 * (double)n_size * (double)d_size * safe_log(2.0 * M_PI);
   }
+  write(logl_const, "logl_const_in_MphNR");
 
   // Optimization iterations.
   for (size_t t = 0; t < max_iter; t++) {
@@ -2672,6 +2695,8 @@ double MphNR(const char func_name, const size_t max_iter, const double max_prec,
       // Update Vg, Ve, and invert Hessian.
       if (t != 0) {
         UpdateVgVe(Hessian_inv, gradient, step_scale, V_g, V_e);
+	write(V_g, "V_g_after_UpdateVgVe");
+	write(V_e, "V_e_after_UpdateVgVe");
       }
 
       // Check if both Vg and Ve are positive definite.
@@ -2695,6 +2720,10 @@ double MphNR(const char func_name, const size_t max_iter, const double max_prec,
       // and logl.
       if (flag_pd == 1) {
         CalcHiQi(eval, X, V_g, V_e, Hi_all, Qi, logdet_H, logdet_Q);
+	write(Hi_all, "Hi_all_in_NR");
+	write(Qi, "Qi_in_NR");
+	write(logdet_H, "logdet_H_in_NR");
+	write(logdet_Q, "logdet_Q_in_NR");
         Calc_Hiy_all(Y, Hi_all, Hiy_all);
         Calc_xHi_all(X, Hi_all, xHi_all);
 
@@ -2908,10 +2937,14 @@ void MphInitial(const size_t em_iter, const double em_prec,
   // Eigen decomposition and calculate log|Ve|.
   // double logdet_Ve = EigenProc(V_g, V_e, D_l, UltVeh, UltVehi);
   EigenProc(V_g, V_e, D_l, UltVeh, UltVehi);
+  write(D_l, "D_l_in_MphInitial");
+  write(UltVeh, "UltVeh_in_MphInitial");
+  write(UltVehi, "UltVehi_in_MphInitial");
 
   // Calculate Qi and log|Q|.
   // double logdet_Q = CalcQi(eval, D_l, X, Qi);
   CalcQi(eval, D_l, X, Qi);
+  write(Qi, "Qi_in_MphInitial");
 
   // Calculate UltVehiY.
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, UltVehi, Y, 0.0, UltVehiY);
@@ -2932,6 +2965,7 @@ void MphInitial(const size_t em_iter, const double em_prec,
       gsl_vector_set(XHiy, j * d_size + i, d);
     }
   }
+  write(XHiy, "XHiy_in_MphInitial");
 
   gsl_blas_dgemv(CblasNoTrans, 1.0, Qi, XHiy, 0.0, beta);
 
@@ -2942,6 +2976,7 @@ void MphInitial(const size_t em_iter, const double em_prec,
     gsl_blas_dgemv(CblasTrans, 1.0, UltVeh, &beta_sub.vector, 0.0,
                    &B_col.vector);
   }
+  write(B, "B_in_MphInitial");
 
   // Free memory.
   gsl_matrix_free(UltVehiY);
@@ -3070,13 +3105,13 @@ void MVLMM::AnalyzeBimbam(const gsl_matrix *U, const gsl_vector *eval,
   logl_H0 = MphEM('R', em_iter, em_prec, eval, &X_sub.matrix, Y, U_hat, E_hat,
                   OmegaU, OmegaE, UltVehiY, UltVehiBX, UltVehiU, UltVehiE, V_g,
                   V_e, &B_sub.matrix);
-  write(logl_H0, "logl_H0-after-EM");
+  write(logl_H0, "logl_H0_after_EM");
   write(V_g, "V_gR0");
   write(V_e, "V_eR0");
   logl_H0 = MphNR('R', nr_iter, nr_prec, eval, &X_sub.matrix, Y, Hi_all,
                   &xHi_all_sub.matrix, Hiy_all, V_g, V_e, Hessian, crt_a, crt_b,
                   crt_c);
-  write(logl_H0, "logl_H0-after-NR");
+  write(logl_H0, "logl_H0_after_NR");
   write(Hessian, "HessianR0");
   write(crt_a, "crt_aR0");
   write(crt_b, "crt_bR0");

@@ -236,7 +236,10 @@ void write(const gsl_matrix *m, const char *msg) {
 void
 write_preamble(const char *name, const char *func, const char *file, int line)
 {
-	cout << "// in " << func << " (" << file << ":" << line << ")" << endl;
+	if(is_debug_data_mode())
+		cout << "// in " << func
+		     << " (" << file << ":" << line << ")"
+		     << endl;
 }
 
 /*

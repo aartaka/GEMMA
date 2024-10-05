@@ -64,6 +64,10 @@ void write(const double d, const char *msg = "");
 void write(const char *s, const char *msg = "");
 void write(const gsl_vector *v, const char *msg = "");
 void write(const gsl_matrix *m, const char *msg = "");
+void write_preamble(const char *name, const char *func, const char *file, int line);
+#define writex(name, ...)					\
+	write_preamble(#name, __func__, __FILE__, __LINE__),	\
+	write(name, #name)
 
 gsl_matrix *gsl_matrix_safe_alloc(size_t rows,size_t cols);
 int gsl_matrix_safe_memcpy (gsl_matrix *dest, const gsl_matrix *src);

@@ -232,6 +232,13 @@ void write(const gsl_matrix *m, const char *msg) {
           cout << "}" << endl;
 }
 
+// At this point, maybe use/write a proper logging framework?
+void
+write_preamble(const char *name, const char *func, const char *file, int line)
+{
+	cout << "// in " << func << " (" << file << ":" << line << ")" << endl;
+}
+
 /*
   Helper function to make sure gsl allocations do their job because
   gsl_matrix_alloc does not initiatize values (behaviour that changed

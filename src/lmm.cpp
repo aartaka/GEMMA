@@ -943,7 +943,7 @@ double LogRL_dev1(double l, void *params) {
   gsl_vector_safe_free(Hi_eval);
   gsl_vector_safe_free(HiHi_eval);
   gsl_vector_safe_free(v_temp);
-
+  writex(dev1, "dev1_in_LogRL_dev1");
   return dev1;
 }
 
@@ -1001,6 +1001,9 @@ double LogRL_dev2(double l, void *params) {
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
   CalcPPPab(n_cvt, p->e_mode, HiHiHi_eval, p->Uab, p->ab, Pab, PPab, PPPab);
+  writex(Pab, "Pab_in_LogRL_dev2");
+  writex(PPab, "PPab_in_LogRL_dev2");
+  writex(PPPab, "PPPab_in_LogRL_dev2");
 
   // Calculate tracePK and trace PKPK.
   double trace_P = trace_Hi, trace_PP = trace_HiHi;
@@ -1013,6 +1016,7 @@ double LogRL_dev2(double l, void *params) {
     trace_P -= ps2_ww / ps_ww;
     trace_PP += ps2_ww * ps2_ww / (ps_ww * ps_ww) - 2.0 * ps3_ww / ps_ww;
   }
+  writex(trace_PP);
   double trace_PKPK = (df + trace_PP - 2.0 * trace_P) / (l * l);
 
   // Calculate yPKPy, yPKPKPy.
@@ -1033,7 +1037,7 @@ double LogRL_dev2(double l, void *params) {
   gsl_vector_safe_free(HiHi_eval);
   gsl_vector_safe_free(HiHiHi_eval);
   gsl_vector_safe_free(v_temp);
-
+  writex(dev2, "dev2_in_LogRL_dev2");
   return dev2;
 }
 

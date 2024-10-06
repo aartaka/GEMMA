@@ -1025,10 +1025,15 @@ double LogRL_dev2(double l, void *params) {
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_ww);
   double PPP_yy = gsl_matrix_safe_get(PPPab, nc_total, index_ww);
   double yPKPy = (P_yy - PP_yy) / l;
-  double yPKPKPy = (P_yy + PPP_yy - 2.0 * PP_yy) / (l * l);
+  double yPKPKPy = ((P_yy + PPP_yy
+		     - 2.0 * PP_yy)
+		    / (l * l));
 
-  dev2 = 0.5 * trace_PKPK -
-         0.5 * df * (2.0 * yPKPKPy * P_yy - yPKPy * yPKPy) / (P_yy * P_yy);
+  dev2 = (0.5 * trace_PKPK
+	  - 0.5 * df
+	  * (2.0 * yPKPKPy * P_yy
+	     - yPKPy * yPKPy)
+	  / (P_yy * P_yy));
 
   gsl_matrix_free(Pab);  // FIXME
   gsl_matrix_free(PPab);
@@ -1121,6 +1126,9 @@ void LogRL_dev12(double l, void *params, double *dev1, double *dev2) {
   *dev1 = -0.5 * trace_PK + 0.5 * df * yPKPy / P_yy;
   *dev2 = 0.5 * trace_PKPK -
           0.5 * df * (2.0 * yPKPKPy * P_yy - yPKPy * yPKPy) / (P_yy * P_yy);
+
+  write(*dev1, "dev1_in_LogRL_dev12");
+  write(*dev2, "dev2_in_LogRL_dev12");
 
   gsl_matrix_free(Pab);  // FIXME
   gsl_matrix_free(PPab);

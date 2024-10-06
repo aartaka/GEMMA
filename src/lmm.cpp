@@ -280,8 +280,9 @@ $8 = 6
 Iterating through a dataset Hi_eval differs and Uab (last row)
  */
 
-void CalcPab(const size_t n_cvt, const size_t e_mode, const gsl_vector *Hi_eval,
-             const gsl_matrix *Uab, const gsl_vector *unused, gsl_matrix *Pab) {
+void
+CalcPab(const size_t n_cvt, const size_t e_mode, const gsl_vector *Hi_eval,
+	const gsl_matrix *Uab, const gsl_vector *unused, gsl_matrix *Pab) {
 
 #if !defined NDEBUG
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2; // result size
@@ -356,9 +357,10 @@ void CalcPab(const size_t n_cvt, const size_t e_mode, const gsl_vector *Hi_eval,
   return;
 }
 
-void CalcPPab(const size_t n_cvt, const size_t e_mode,
-              const gsl_vector *HiHi_eval, const gsl_matrix *Uab,
-              const gsl_vector *unused_ab, const gsl_matrix *Pab, gsl_matrix *PPab) {
+void
+CalcPPab(const size_t n_cvt, const size_t e_mode,
+	 const gsl_vector *HiHi_eval, const gsl_matrix *Uab,
+	 const gsl_vector *unused_ab, const gsl_matrix *Pab, gsl_matrix *PPab) {
   size_t index_ab, index_aw, index_bw, index_ww;
   double p2_ab;
   double ps2_ab, ps_aw, ps_bw, ps_ww, ps2_aw, ps2_bw, ps2_ww;
@@ -415,10 +417,11 @@ void CalcPPab(const size_t n_cvt, const size_t e_mode,
   return;
 }
 
-void CalcPPPab(const size_t n_cvt, const size_t e_mode,
-               const gsl_vector *HiHiHi_eval, const gsl_matrix *Uab,
-               const gsl_vector *unused_ab, const gsl_matrix *Pab,
-               const gsl_matrix *PPab, gsl_matrix *PPPab) {
+void
+CalcPPPab(const size_t n_cvt, const size_t e_mode,
+	  const gsl_vector *HiHiHi_eval, const gsl_matrix *Uab,
+	  const gsl_vector *unused_ab, const gsl_matrix *Pab,
+	  const gsl_matrix *PPab, gsl_matrix *PPPab) {
   size_t index_ab, index_aw, index_bw, index_ww;
   double p3_ab;
   double ps3_ab, ps_aw, ps_bw, ps_ww, ps2_aw, ps2_bw, ps2_ww, ps3_aw, ps3_bw,
@@ -481,7 +484,8 @@ void CalcPPPab(const size_t n_cvt, const size_t e_mode,
   return;
 }
 
-double LogL_f(double l, void *params) {
+double
+LogL_f(double l, void *params) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -541,7 +545,8 @@ double LogL_f(double l, void *params) {
   return f;
 }
 
-double LogL_dev1(double l, void *params) {
+double
+LogL_dev1(double l, void *params) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -639,7 +644,8 @@ $8 = 6
   return dev1;
 }
 
-double LogL_dev2(double l, void *params) {
+double
+LogL_dev2(double l, void *params) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -716,7 +722,8 @@ double LogL_dev2(double l, void *params) {
   return dev2;
 }
 
-void LogL_dev12(double l, void *params, double *dev1, double *dev2) {
+void
+LogL_dev12(double l, void *params, double *dev1, double *dev2) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -796,7 +803,8 @@ void LogL_dev12(double l, void *params, double *dev1, double *dev2) {
   return;
 }
 
-double LogRL_f(double l, void *params) {
+double
+LogRL_f(double l, void *params) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;

@@ -871,7 +871,8 @@ LogRL_f(double l, void *params) {
   return f;
 }
 
-double LogRL_dev1(double l, void *params) {
+double
+LogRL_dev1(double l, void *params) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -955,7 +956,8 @@ double LogRL_dev1(double l, void *params) {
   return dev1;
 }
 
-double LogRL_dev2(double l, void *params) {
+double
+LogRL_dev2(double l, void *params) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -1054,7 +1056,8 @@ double LogRL_dev2(double l, void *params) {
   return dev2;
 }
 
-void LogRL_dev12(double l, void *params, double *dev1, double *dev2) {
+void
+LogRL_dev12(double l, void *params, double *dev1, double *dev2) {
   FUNC_PARAM *p = (FUNC_PARAM *)params;
   size_t n_cvt = p->n_cvt;
   size_t ni_test = p->ni_test;
@@ -1149,8 +1152,9 @@ void LogRL_dev12(double l, void *params, double *dev1, double *dev2) {
   return;
 }
 
-void LMM::CalcRLWald(const double l, const FUNC_PARAM &params, double &beta,
-                     double &se, double &p_wald) {
+void
+LMM::CalcRLWald(const double l, const FUNC_PARAM &params, double &beta,
+		double &se, double &p_wald) {
   size_t n_cvt = params.n_cvt;
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2;
 
@@ -1192,8 +1196,9 @@ void LMM::CalcRLWald(const double l, const FUNC_PARAM &params, double &beta,
 }
 
 
-void LMM::CalcRLScore(const double l, const FUNC_PARAM &params, double &beta,
-                      double &se, double &p_score) {
+void
+LMM::CalcRLScore(const double l, const FUNC_PARAM &params, double &beta,
+		 double &se, double &p_score) {
   size_t n_cvt = params.n_cvt;
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2;
 
@@ -1235,7 +1240,8 @@ void LMM::CalcRLScore(const double l, const FUNC_PARAM &params, double &beta,
   gsl_vector_safe_free(v_temp);
 }
 
-void CalcUab(const gsl_matrix *UtW, const gsl_vector *Uty, gsl_matrix *Uab) {
+void
+CalcUab(const gsl_matrix *UtW, const gsl_vector *Uty, gsl_matrix *Uab) {
   size_t index_ab;
   size_t n_cvt = UtW->size2;
 
@@ -1280,8 +1286,9 @@ void CalcUab(const gsl_matrix *UtW, const gsl_vector *Uty, gsl_matrix *Uab) {
   return;
 }
 
-void CalcUab(const gsl_matrix *UtW, const gsl_vector *Uty,
-             const gsl_vector *Utx, gsl_matrix *Uab) {
+void
+CalcUab(const gsl_matrix *UtW, const gsl_vector *Uty,
+	const gsl_vector *Utx, gsl_matrix *Uab) {
   size_t index_ab;
   size_t n_cvt = UtW->size2;
 
@@ -1304,7 +1311,8 @@ void CalcUab(const gsl_matrix *UtW, const gsl_vector *Uty,
   return;
 }
 
-void Calcab(const gsl_matrix *W, const gsl_vector *y, gsl_vector *ab) {
+void
+Calcab(const gsl_matrix *W, const gsl_vector *y, gsl_vector *ab) {
   write(W,"W");
   write(y,"y");
 
@@ -1357,8 +1365,9 @@ void Calcab(const gsl_matrix *W, const gsl_vector *y, gsl_vector *ab) {
   return;
 }
 
-void Calcab(const gsl_matrix *W, const gsl_vector *y, const gsl_vector *x,
-            gsl_vector *ab) {
+void
+Calcab(const gsl_matrix *W, const gsl_vector *y, const gsl_vector *x,
+       gsl_vector *ab) {
   size_t index_ab;
   size_t n_cvt = W->size2;
 
@@ -1387,9 +1396,10 @@ void Calcab(const gsl_matrix *W, const gsl_vector *y, const gsl_vector *x,
   return;
 }
 
-void LMM::AnalyzeGene(const gsl_matrix *U, const gsl_vector *eval,
-                      const gsl_matrix *UtW, const gsl_vector *Utx,
-                      const gsl_matrix *W, const gsl_vector *x) {
+void
+LMM::AnalyzeGene(const gsl_matrix *U, const gsl_vector *eval,
+		 const gsl_matrix *UtW, const gsl_vector *Utx,
+		 const gsl_matrix *W, const gsl_vector *x) {
   debug_msg(file_gene);
   igzstream infile(file_gene.c_str(), igzstream::in);
   if (!infile) {
@@ -1496,11 +1506,12 @@ void LMM::AnalyzeGene(const gsl_matrix *U, const gsl_vector *eval,
 }
 
 
-void LMM::Analyze(std::function< SnpNameValues(size_t) >& fetch_snp,
-                  const gsl_matrix *U, const gsl_vector *eval,
-                  const gsl_matrix *UtW, const gsl_vector *Uty,
-                  const gsl_matrix *W, const gsl_vector *y,
-                  const set<string> gwasnps) {
+void
+LMM::Analyze(std::function< SnpNameValues(size_t) >& fetch_snp,
+	     const gsl_matrix *U, const gsl_vector *eval,
+	     const gsl_matrix *UtW, const gsl_vector *Uty,
+	     const gsl_matrix *W, const gsl_vector *y,
+	     const set<string> gwasnps) {
   clock_t time_start = clock();
 
   write(W, "W");
@@ -2243,9 +2254,10 @@ void CalcPve(const gsl_vector *eval, const gsl_matrix *UtW,
 // Obtain REML estimate for Vg and Ve using lambda_remle.
 // Obtain beta and se(beta) for coefficients.
 // ab is not used when e_mode==0.
-void CalcLmmVgVeBeta(const gsl_vector *eval, const gsl_matrix *UtW,
-                     const gsl_vector *Uty, const double lambda, double &vg,
-                     double &ve, gsl_vector *beta, gsl_vector *se_beta) {
+void
+CalcLmmVgVeBeta(const gsl_vector *eval, const gsl_matrix *UtW,
+		const gsl_vector *Uty, const double lambda, double &vg,
+		double &ve, gsl_vector *beta, gsl_vector *se_beta) {
   size_t n_cvt = UtW->size2, ni_test = UtW->size1;
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2;
 

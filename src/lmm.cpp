@@ -2034,9 +2034,10 @@ void MatrixCalcLR(const gsl_matrix *U, const gsl_matrix *UtX,
   return;
 }
 
-void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
-                const double l_max, const size_t n_region, double &lambda,
-                double &logf) {
+void
+CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
+	   const double l_max, const size_t n_region, double &lambda,
+	   double &logf) {
   // wipe return values
   logf = nan("NAN");
   lambda = nan("NAN");
@@ -2240,10 +2241,11 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
 static int first_call = 1;
 
 // Calculate lambda in the null model.
-void CalcLambda(const char func_name, const gsl_vector *eval,
-                const gsl_matrix *UtW, const gsl_vector *Uty,
-                const double l_min, const double l_max, const size_t n_region,
-                double &lambda, double &logl_H0) {
+void
+CalcLambda(const char func_name, const gsl_vector *eval,
+	   const gsl_matrix *UtW, const gsl_vector *Uty,
+	   const double l_min, const double l_max, const size_t n_region,
+	   double &lambda, double &logl_H0) {
 
   write(eval,"eval6");
 

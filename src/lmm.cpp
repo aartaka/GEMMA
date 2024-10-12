@@ -466,9 +466,10 @@ CalcPPPab(const size_t n_cvt, const size_t e_mode,
             p3_ab = ps3_ab -
               ps_aw * ps_bw * ps2_ww * ps2_ww / (ps_ww * ps_ww * ps_ww);
             p3_ab -= (ps_aw * ps3_bw + ps_bw * ps3_aw + ps2_aw * ps2_bw) / ps_ww;
-            p3_ab += (ps_aw * ps2_bw * ps2_ww + ps_bw * ps2_aw * ps2_ww +
-                      ps_aw * ps_bw * ps3_ww) /
-              (ps_ww * ps_ww);
+            p3_ab += (ps_aw * ps2_bw * ps2_ww
+		      + ps_bw * ps2_aw * ps2_ww
+		      + ps_aw * ps_bw * ps3_ww)
+		    / (ps_ww * ps_ww);
           }
           else {
             p3_ab = ps3_ab;
@@ -491,6 +492,7 @@ LogL_f(double l, void *params) {
   size_t ni_test = p->ni_test;
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2;
 
+  writex(l);
   size_t nc_total;
   if (p->calc_null == true) {
     nc_total = n_cvt;
@@ -514,6 +516,7 @@ LogL_f(double l, void *params) {
   }
   gsl_vector_add_constant(v_temp, 1.0);
   gsl_vector_div(Hi_eval, v_temp);
+  writex(Hi_eval);
 
   for (size_t i = 0; i < (p->eval)->size; ++i) {
     d = gsl_vector_get(v_temp, i);
@@ -521,12 +524,15 @@ LogL_f(double l, void *params) {
   }
 
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
+  writex(Pab);
 
   double c =
       0.5 * (double)ni_test * (safe_log((double)ni_test) - safe_log(2 * M_PI) - 1.0);
+  writex(c);
 
   index_yy = GetabIndex(n_cvt + 2, n_cvt + 2, n_cvt);
   double P_yy = gsl_matrix_safe_get(Pab, nc_total, index_yy);
+  writex(P_yy);
 
   if (P_yy >= 0.0 && (P_yy < P_YY_MIN)) P_yy = P_YY_MIN; // control potential round-off
 
@@ -536,6 +542,7 @@ LogL_f(double l, void *params) {
     assert(P_yy > 0.0);
   }
   f = c - 0.5 * logdet_h - 0.5 * (double)ni_test * safe_log(P_yy);
+  writex(f);
   if (is_check_mode() || is_debug_mode()) {
     assert(!is_nan(f));
   }
@@ -552,6 +559,7 @@ LogL_dev1(double l, void *params) {
   size_t ni_test = p->ni_test;
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2; // represents top half of covariate matrix
 
+  writex(l);
   size_t nc_total;
   if (p->calc_null == true) {
     nc_total = n_cvt;
@@ -582,11 +590,13 @@ LogL_dev1(double l, void *params) {
   gsl_vector_mul(HiHi_eval, Hi_eval);
 
   gsl_vector_set_all(v_temp, 1.0);
+  writex(Hi_eval);
   gsl_blas_ddot(Hi_eval, v_temp, &trace_Hi);
 
   if (p->e_mode != 0) {
     trace_Hi = (double)ni_test - trace_Hi;
   }
+  writex(trace_Hi);
 
   /*
 (gdb) p Uab->size1
@@ -627,13 +637,18 @@ $8 = 6
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
 
   double trace_HiK = ((double)ni_test - trace_Hi) / l;
+  writex(trace_HiK);
 
   index_yy = GetabIndex(n_cvt + 2, n_cvt + 2, n_cvt);
 
   double P_yy = gsl_matrix_safe_get(Pab, nc_total, index_yy);
+  writex(P_yy);
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_yy);
+  writex(PP_yy);
   double yPKPy = (P_yy - PP_yy) / l;
+  writex(yPKPy);
   dev1 = -0.5 * trace_HiK + 0.5 * (double)ni_test * yPKPy / P_yy;
+  writex(dev1);
 
   gsl_matrix_free(Pab);   // FIXME: may contain NaN
   gsl_matrix_free(PPab);  // FIXME: may contain NaN
@@ -678,11 +693,14 @@ LogL_dev2(double l, void *params) {
   }
   gsl_vector_add_constant(v_temp, 1.0);
   gsl_vector_div(Hi_eval, v_temp);
+  writex(Hi_eval);
 
   gsl_vector_safe_memcpy(HiHi_eval, Hi_eval);
   gsl_vector_mul(HiHi_eval, Hi_eval);
+  writex(HiHi_eval);
   gsl_vector_safe_memcpy(HiHiHi_eval, HiHi_eval);
   gsl_vector_mul(HiHiHi_eval, Hi_eval);
+  writex(HiHiHi_eval);
 
   gsl_vector_set_all(v_temp, 1.0);
   gsl_blas_ddot(Hi_eval, v_temp, &trace_Hi);
@@ -692,24 +710,39 @@ LogL_dev2(double l, void *params) {
     trace_Hi = (double)ni_test - trace_Hi;
     trace_HiHi = 2 * trace_Hi + trace_HiHi - (double)ni_test;
   }
+  writex(trace_Hi);
+  writex(trace_HiHi);
 
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
   CalcPPPab(n_cvt, p->e_mode, HiHiHi_eval, p->Uab, p->ab, Pab, PPab, PPPab);
 
-  double trace_HiKHiK = ((double)ni_test + trace_HiHi - 2 * trace_Hi) / (l * l);
+  double trace_HiKHiK = ((double)ni_test
+			 + trace_HiHi
+			 - 2 * trace_Hi)
+	  / (l * l);
+  writex(trace_HiKHiK);
 
   index_yy = GetabIndex(n_cvt + 2, n_cvt + 2, n_cvt);
   double P_yy = gsl_matrix_safe_get(Pab, nc_total, index_yy);
+  writex(P_yy);
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_yy);
+  writex(PP_yy);
   double PPP_yy = gsl_matrix_safe_get(PPPab, nc_total, index_yy);
+  writex(PPP_yy);
 
   double yPKPy = (P_yy - PP_yy) / l;
-  double yPKPKPy = (P_yy + PPP_yy - 2.0 * PP_yy) / (l * l);
+  writex(yPKPy);
+  double yPKPKPy = (P_yy
+		    + PPP_yy
+		    - 2.0 * PP_yy)
+	  / (l * l);
+  writex(yPKPKPy);
 
-  dev2 = 0.5 * trace_HiKHiK -
-         0.5 * (double)ni_test * (2.0 * yPKPKPy * P_yy - yPKPy * yPKPy) /
-             (P_yy * P_yy);
+  dev2 = 0.5 * trace_HiKHiK
+	  - 0.5 * (double)ni_test * (2.0 * yPKPKPy * P_yy - yPKPy * yPKPy)
+	  / (P_yy * P_yy);
+  writex(dev2);
 
   gsl_matrix_free(Pab);  // FIXME
   gsl_matrix_free(PPab);
@@ -756,11 +789,14 @@ LogL_dev12(double l, void *params, double *dev1, double *dev2) {
   }
   gsl_vector_add_constant(v_temp, 1.0);
   gsl_vector_div(Hi_eval, v_temp);
+  writex(Hi_eval);
 
   gsl_vector_safe_memcpy(HiHi_eval, Hi_eval);
   gsl_vector_mul(HiHi_eval, Hi_eval);
+  writex(HiHi_eval);
   gsl_vector_safe_memcpy(HiHiHi_eval, HiHi_eval);
   gsl_vector_mul(HiHiHi_eval, Hi_eval);
+  writex(HiHiHi_eval);
 
   gsl_vector_set_all(v_temp, 1.0);
   gsl_blas_ddot(Hi_eval, v_temp, &trace_Hi);
@@ -770,27 +806,43 @@ LogL_dev12(double l, void *params, double *dev1, double *dev2) {
     trace_Hi = (double)ni_test - trace_Hi;
     trace_HiHi = 2 * trace_Hi + trace_HiHi - (double)ni_test;
   }
+  writex(trace_Hi);
+  writex(trace_HiHi);
 
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
   CalcPPPab(n_cvt, p->e_mode, HiHiHi_eval, p->Uab, p->ab, Pab, PPab, PPPab);
 
   double trace_HiK = ((double)ni_test - trace_Hi) / l;
-  double trace_HiKHiK = ((double)ni_test + trace_HiHi - 2 * trace_Hi) / (l * l);
+  writex(trace_HiK);
+  double trace_HiKHiK = ((double)ni_test
+			 + trace_HiHi
+			 - 2 * trace_Hi)
+	  / (l * l);
+  writex(trace_HiKHiK);
 
   index_yy = GetabIndex(n_cvt + 2, n_cvt + 2, n_cvt);
 
   double P_yy = gsl_matrix_safe_get(Pab, nc_total, index_yy);
+  writex(P_yy);
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_yy);
+  writex(PP_yy);
   double PPP_yy = gsl_matrix_safe_get(PPPab, nc_total, index_yy);
+  writex(PPP_yy);
 
   double yPKPy = (P_yy - PP_yy) / l;
-  double yPKPKPy = (P_yy + PPP_yy - 2.0 * PP_yy) / (l * l);
+  writex(yPKPy);
+  double yPKPKPy = (P_yy + PPP_yy - 2.0 * PP_yy)
+	  / (l * l);
+  writex(yPKPKPy);
 
-  *dev1 = -0.5 * trace_HiK + 0.5 * (double)ni_test * yPKPy / P_yy;
+  *dev1 = -0.5 * trace_HiK
+	  + 0.5 * (double)ni_test * yPKPy / P_yy;
+  write(*dev1, "dev1_in_dev12");
   *dev2 = 0.5 * trace_HiKHiK -
-          0.5 * (double)ni_test * (2.0 * yPKPKPy * P_yy - yPKPy * yPKPy) /
-              (P_yy * P_yy);
+          0.5 * (double)ni_test * (2.0 * yPKPKPy * P_yy - yPKPy * yPKPy)
+	  / (P_yy * P_yy);
+  write(*dev2, "dev2_in_dev12");
 
   gsl_matrix_free(Pab);   // FIXME: may contain NaN
   gsl_matrix_free(PPab);  // FIXME: may contain NaN
@@ -861,8 +913,12 @@ LogRL_f(double l, void *params) {
   // P_yy is positive and may get zeroed printf("P_yy=%f",P_yy);
   if (P_yy >= 0.0 && (P_yy < P_YY_MIN)) P_yy = P_YY_MIN; // control potential round-off
 
-  double c = 0.5 * df * (safe_log(df) - safe_log(2 * M_PI) - 1.0);
-  f = c - 0.5 * logdet_h - 0.5 * logdet_hiw - 0.5 * df * safe_log(P_yy);
+  double c = 0.5 * df * (safe_log(df)
+			 - safe_log(2 * M_PI)
+			 - 1.0);
+  f = c - 0.5 * logdet_h
+	  - 0.5 * logdet_hiw
+	  - 0.5 * df * safe_log(P_yy);
 
   gsl_matrix_free(Pab);
   gsl_matrix_free(Iab); // contains NaN
@@ -2011,7 +2067,9 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       write(dev1_h, "dev1_h_in_CalcLambda");
     } else {
       dev1_l = LogL_dev1(lambda_l, &params);
+      write(dev1_l, "dev1_l_in_CalcLambda");
       dev1_h = LogL_dev1(lambda_h, &params);
+      write(dev1_h, "dev1_h_in_CalcLambda");
     }
 
     if (dev1_l * dev1_h <= 0) {
@@ -2084,7 +2142,7 @@ void CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
           break;
         }
         l = gsl_root_fsolver_root(s_f);
-        write(l, "l_in_CalcLambda");
+        writex(l);
         lambda_l = gsl_root_fsolver_x_lower(s_f);
         lambda_h = gsl_root_fsolver_x_upper(s_f);
         status = gsl_root_test_interval(lambda_l, lambda_h, 0, 1e-1);
@@ -2244,7 +2302,10 @@ void CalcPve(const gsl_vector *eval, const gsl_matrix *UtW,
   double se = safe_sqrt(-1.0 / LogRL_dev2(lambda, &param0));
 
   pve = trace_G * lambda / (trace_G * lambda + 1.0);
-  pve_se = trace_G / ((trace_G * lambda + 1.0) * (trace_G * lambda + 1.0)) * se;
+  pve_se = trace_G
+	  / ((trace_G * lambda + 1.0)
+	     * (trace_G * lambda + 1.0))
+	  * se;
 
   gsl_matrix_safe_free(Uab);
   gsl_vector_free(ab); // unused

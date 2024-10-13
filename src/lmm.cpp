@@ -2234,6 +2234,8 @@ CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       logf = logf_h;
     }
   }
+  writex(lambda);
+  writex(logf);
 
   return;
 }
@@ -2265,10 +2267,10 @@ CalcLambda(const char func_name, const gsl_vector *eval,
   gsl_vector *ab = gsl_vector_safe_alloc(n_index);
 
   gsl_matrix_set_zero(Uab);
-  write(UtW,"UtW_in_CalcLambda-null");
-  write(Uty,"Uty_in_CalcLambda-null");
+  writex(UtW);
+  writex(Uty);
   CalcUab(UtW, Uty, Uab);
-  write(Uab,"Uab_in_CalcLambda-null");
+  writex(Uab);
   Calcab(UtW, Uty, ab);
 
   FUNC_PARAM param0 = {true, ni_test, n_cvt, eval, Uab, ab, 0};

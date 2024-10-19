@@ -527,21 +527,28 @@ LogL_f(double l, void *params) {
   writex(Pab);
 
   double c =
-      0.5 * (double)ni_test * (safe_log((double)ni_test) - safe_log(2 * M_PI) - 1.0);
+	  0.5
+	  * (double)ni_test
+	  * (safe_log((double)ni_test)
+	     - safe_log(2 * M_PI)
+	     - 1.0);
   writex(c);
 
   index_yy = GetabIndex(n_cvt + 2, n_cvt + 2, n_cvt);
   double P_yy = gsl_matrix_safe_get(Pab, nc_total, index_yy);
   writex(P_yy);
 
-  if (P_yy >= 0.0 && (P_yy < P_YY_MIN)) P_yy = P_YY_MIN; // control potential round-off
+  if (P_yy >= 0.0 && (P_yy < P_YY_MIN))
+	  P_yy = P_YY_MIN; // control potential round-off
 
   if (is_check_mode() || is_debug_mode()) {
     // cerr << "P_yy is" << P_yy << endl;
     assert(!is_nan(P_yy));
     assert(P_yy > 0.0);
   }
-  f = c - 0.5 * logdet_h - 0.5 * (double)ni_test * safe_log(P_yy);
+  f = c
+	  - 0.5 * logdet_h
+	  - 0.5 * (double)ni_test * safe_log(P_yy);
   writex(f);
   if (is_check_mode() || is_debug_mode()) {
     assert(!is_nan(f));
@@ -1001,7 +1008,8 @@ LogRL_dev1(double l, void *params) {
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_ww);
   double yPKPy = (P_yy - PP_yy) / l;
 
-  dev1 = -0.5 * trace_PK + 0.5 * df * yPKPy / P_yy;
+  dev1 = -0.5 * trace_PK
+	  + 0.5 * df * yPKPy / P_yy;
 
   gsl_matrix_free(Pab);  // FIXME: may contain NaN
   gsl_matrix_free(PPab); // FIXME: may contain NaN
@@ -1091,7 +1099,8 @@ LogRL_dev2(double l, void *params) {
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_ww);
   double PPP_yy = gsl_matrix_safe_get(PPPab, nc_total, index_ww);
   double yPKPy = (P_yy - PP_yy) / l;
-  double yPKPKPy = ((P_yy + PPP_yy
+  double yPKPKPy = ((P_yy
+		     + PPP_yy
 		     - 2.0 * PP_yy)
 		    / (l * l));
 
@@ -2211,7 +2220,6 @@ CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       } else if (logf < logf_l) {
         logf = logf_l;
         lambda = l;
-      } else {
       }
     }
     gsl_root_fsolver_free((gsl_root_fsolver*)s_f);

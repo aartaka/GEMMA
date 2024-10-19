@@ -976,9 +976,9 @@ LogRL_dev1(double l, void *params) {
 
   gsl_vector_set_all(v_temp, 1.0);
   gsl_blas_ddot(Hi_eval, v_temp, &trace_Hi);
-  write(v_temp, "v_temp_in_LogRL_dev1");
-  write(Hi_eval, "Hi_eval_in_LogRL_dev1");
-  write(trace_Hi, "trace_Hi_in_LogRL_dev1");
+  writex(v_temp, "v_temp_in_LogRL_dev1");
+  writex(Hi_eval, "Hi_eval_in_LogRL_dev1");
+  writex(trace_Hi, "trace_Hi_in_LogRL_dev1");
 
   if (p->e_mode != 0) {
     trace_Hi = (double)ni_test - trace_Hi;
@@ -988,8 +988,8 @@ LogRL_dev1(double l, void *params) {
   write(p->ab, "p->ab");
   CalcPab(n_cvt, p->e_mode, Hi_eval, p->Uab, p->ab, Pab);
   CalcPPab(n_cvt, p->e_mode, HiHi_eval, p->Uab, p->ab, Pab, PPab);
-  write(Pab, "Pab_in_LogRL_dev1");
-  write(PPab, "PPab_in_LogRL_dev1");
+  writex(Pab, "Pab_in_LogRL_dev1");
+  writex(PPab, "PPab_in_LogRL_dev1");
 
   // Calculate tracePK and trace PKPK.
   double trace_P = trace_Hi;
@@ -1000,13 +1000,19 @@ LogRL_dev1(double l, void *params) {
     ps2_ww = gsl_matrix_safe_get(PPab, i, index_ww);
     trace_P -= ps2_ww / ps_ww;
   }
+  writex(trace_P);
   double trace_PK = (df - trace_P) / l;
+  writex(trace_PK);
 
   // Calculate yPKPy, yPKPKPy.
   index_ww = GetabIndex(n_cvt + 2, n_cvt + 2, n_cvt);
+  writex(index_ww);
   double P_yy = gsl_matrix_safe_get(Pab, nc_total, index_ww);
+  writex(P_yy);
   double PP_yy = gsl_matrix_safe_get(PPab, nc_total, index_ww);
+  writex(PP_yy);
   double yPKPy = (P_yy - PP_yy) / l;
+  writex(yPKPy);
 
   dev1 = -0.5 * trace_PK
 	  + 0.5 * df * yPKPy / P_yy;
@@ -2104,6 +2110,9 @@ CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       lambda = l_max;
       logf = logf_h;
     }
+    write("No sign changes", "in_CalcLambda");
+    writex(lambda);
+    writex(logf);
   } else {
     // If derivates change signs.
     double l=0.0, l_temp = 0.0;
@@ -2208,11 +2217,13 @@ CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       if (l > l_max) {
         l = l_max;
       }
+      writex(l);
       if (func_name == 'R' || func_name == 'r') {
         logf_l = LogRL_f(l, &params);
       } else {
         logf_l = LogL_f(l, &params);
       }
+      writex(logf_l);
 
       if (i == 0) {
         logf = logf_l;
@@ -2232,12 +2243,16 @@ CalcLambda(const char func_name, FUNC_PARAM &params, const double l_min,
       logf_l = LogL_f(l_min, &params);
       logf_h = LogL_f(l_max, &params);
     }
+    writex(logf_l);
+    writex(logf_h);
 
     if (logf_l > logf) {
+      write("Flipping logf low", "in_CalcLambda");
       lambda = l_min;
       logf = logf_l;
     }
     if (logf_h > logf) {
+      write("Flipping logf high", "in_CalcLambda");
       lambda = l_max;
       logf = logf_h;
     }

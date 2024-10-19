@@ -2297,9 +2297,10 @@ CalcLambda(const char func_name, const gsl_vector *eval,
 }
 
 // Obtain REMLE estimate for PVE using lambda_remle.
-void CalcPve(const gsl_vector *eval, const gsl_matrix *UtW,
-             const gsl_vector *Uty, const double lambda, const double trace_G,
-             double &pve, double &pve_se) {
+void
+CalcPve(const gsl_vector *eval, const gsl_matrix *UtW,
+	const gsl_vector *Uty, const double lambda, const double trace_G,
+	double &pve, double &pve_se) {
   size_t n_cvt = UtW->size2, ni_test = UtW->size1;
   size_t n_index = (n_cvt + 2 + 1) * (n_cvt + 2) / 2;
 
